@@ -3,6 +3,7 @@
 set -e
 
 FILENAME="${1}"
+SPACES_COUNT=${2:-4}
 
 # convert to raw python script
 jupyter nbconvert --to script "$FILENAME"
@@ -11,6 +12,12 @@ jupyter nbconvert --to script "$FILENAME"
 FILENAME="${FILENAME%.*}.py"
 readarray -t file_lines < "$FILENAME"
 truncate -s 0 "$FILENAME"
+
+# indent size
+indent=""
+for ((i = 0; i < SPACES_COUNT; i++)); do
+    indent="$indent "
+done
 
 # add indents and boilerplate
 script=()
@@ -33,7 +40,7 @@ for line in "${file_lines[@]}"; do
     if [ "$add_indent" == True ]; then
         # don't add indents if empty line
         if [[ "$line" == *[![:space:]]* ]]; then
-            line="    $line"
+            line="$indent$line"
         fi
         script+=("$line")
     else
