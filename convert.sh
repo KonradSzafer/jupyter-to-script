@@ -17,13 +17,14 @@ script=()
 
 for line in "${file_lines[@]}"; do
     if [ "$add_indent" == True ]; then
-        line="    $line"
+        if [[ "$line" == *[![:space:]]* ]]; then
+            line="    $line"
+        fi
         script+=("$line")
     else
         script+=("$line")
     fi
     if [ "$line" == "# !script" ]; then
-        # adding indent from now
         script+=("if __name__ == '__main__':")
         add_indent=True
     fi
